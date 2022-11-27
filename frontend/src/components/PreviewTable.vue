@@ -13,13 +13,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row"> 24/Nov/2022 - 17:41:52</th>
-                <td>Jacob</td>
-                <td>Phishing</td>
-                <td><a href="https://www.google.com" target="_blank">https://www.google.com/</a> - <a href="">WHOIS</a>
+            <tr v-for="fraud in latestReports" v-bind:key="fraud.id">
+                <th scope="row"> {{ fraud.time_reported }}</th>
+                <td>{{ fraud.name }}</td>
+                <td>{{ fraud.type }}</td>
+                <td><a :href="`${fraud.url}`" target="_blank">{{ fraud.url }}</a> - <a href="">WHOIS</a>
                 </td>
-                <td>198.0.0.1 - <a href="https://www.arin.net/">ARIN</a></td>
+                <td>{{ fraud.ip_adress }} - <a href="https://www.arin.net/">ARIN</a></td>
                 <td><button class="btn btn-outline-success" type="button">See details</button></td>
             </tr>
         </tbody>
@@ -28,8 +28,30 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     name: "PreviewTable",
+    data() {
+        return {
+            latestReports: [],
+        };
+    },
+
+    mounted() {
+        this.getLatestReports();
+    },
+    methods: {
+        getLatestReports() {
+            axios.get("http://127.0.0.1:8000/api/frauds/")
+                .then((response) => {
+                    this.latestReports = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    },
 };
 </script>
 
